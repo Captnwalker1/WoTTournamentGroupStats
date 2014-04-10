@@ -2,7 +2,7 @@
 	"name": "WoT Tournament Group Stat Scraper",
 	"version": "0.1",
 	"manifest_version" : 2,
-	"description": "SAMPLE_DESCRIPTION",
+	"description": "A Chrome Extension script for world of tanks tournament group stage pages that pulls stats for each team",
 	"background" : {
 		"page" : "background.html"
 	},
@@ -12,7 +12,7 @@
 			"19": "icons/19.png",
 			"38": "icons/38.png"
 		},
-		"default_title" : "SAMPLE_TITLE",
+		"default_title" : "WoTTournyGroupStats",
 		"default_popup" : "fragments/popup.html"
 	},
 	"permissions": [
@@ -21,7 +21,7 @@
 	],
 	"content_scripts": [
 	{
-		"matches": ["http://*/*"],
+		"matches": ["https://*.worldoftanks.com/*","https://worldoftanks.com/*"],
 		"js": ["lib/jquery-1.8.3.min.js","scripts/main.js"],
 		"run_at": "document_idle"
 	}
@@ -31,5 +31,5 @@
 		"48": "icons/48.png",
 		"128": "icons/128.png"
 	},
-	"options_page" : "fancy-settings/source/index.html"
+	/*"options_page" : "fancy-settings/source/index.html"*/
 }
