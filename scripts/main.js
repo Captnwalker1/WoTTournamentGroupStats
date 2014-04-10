@@ -114,7 +114,7 @@ function updateStatsTable() {
 	{
 		var avg = (parsedteams[i].sum/parsedteams[i].players.length).toFixed(0)
 		table += '<tr class="WoTGroupStatItem">'
-		table += '<td class="b-points">'+(i+1)+'</td>'
+		table += '<td class="b-points">'+(parseInt(i)+1)+'</td>'
 		table += '<td class="b-points">'+parsedteams[i].name+'</td>'
 		table += '<td class="b-points" style="color:'+colorForRating(avg)+'">'+avg+'</td>'
 		table += '<td class="b-points" style="color:'+colorForRating(parsedteams[i].best)+'">'+parsedteams[i].best+'</td></tr>';
