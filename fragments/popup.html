@@ -1,0 +1,35 @@
+<!doctype html>
+<style type="text/css">
+	#mainPopup {
+		padding: 10px;
+		height: 300px;
+		width: 400px;
+		font-family: Helvetica, Ubuntu, Arial, sans-serif;
+	}
+	h1 {
+		font-size: 2em;
+	}
+	#statsList {
+		list-style: circle;
+	}
+	.statItem {
+		
+	}
+</style>
+<script>
+	function updateStats(teams)
+	{
+		$('#statsList > li.statItem').remove();
+		foreach(var i in teams) {
+			$('#statsList').append('<li class="statItem">'+teams[i].name+' -- '+teams[i].avg+' -- '+teams[i].best+'</li>');
+		}
+	}
+</script>
+
+<div id="mainPopup">
+	<h2>WoT Tournamnet Group Ratings</h2>
+	<ul id="statsList">
+		<li style="list-style:none;">Team -- AVG -- Best</li>
+	</ul>
+	<p>To shut this popup down, edit the manifest file and remove the "default popup" key. To edit it, just edit fragments/popup.html. The CSS is there, too.</p>
+</div>
