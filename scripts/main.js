@@ -18,6 +18,9 @@ chrome.extension.sendMessage({}, function(response) {
 		{
 			if(teamParseTimeout == null)
 				teamParseTimeout = setTimeout(function(){parseTeams();}, 1000);
+		} else if (window.location.href.indexOf('uc/teams/')) {
+			if(teamParseTimeout == null)
+				teamParseTimeout = setTimeout(function(){parseStandaloneTeam();}, 1000);
 		}
 		// ----------------------------------------------------------
 	}
@@ -64,6 +67,51 @@ function getTeam(index,link)
 	);
 }
 
+function parseStandaloneTeam()
+{
+	$('.t-table__team-staff > tbody > tr > th').append('<img id="statLoadingIndicator" src="http://worldoftanks.com/static/3.18.0.1/common/css/scss/content/tournaments/img/wot_waiter.gif" />');
+	if(DEBUG) console.log("parseStandaloneTeam start");
+	var users = $('td.b-user > a');
+	wotteams.push({'playerlinks':users,'players':[],'sum':0,'best':0});	
+	for(var i=0; i<users.length; i++) {
+		parseStandaloneTeamPlayer(wotteams[0].playerlinks[i],i);
+	}
+}
+
+function parseStandaloneTeamPlayer(link,index)
+{
+	if("undefined" == typeof(link))
+	{
+		return;
+	}
+	$.get(link.href,null, function (data, status, xhr ) {
+			var rating = $(data).find('p.t-personal-data_value__pr')[0].innerText;
+			rating=rating.replace(',','');
+			var p = {"rating":rating,"name":link.innerText};
+			wotteams[0].players[index] = p;
+			wotteams[0].sum += parseFloat(rating);
+			teamscompleted+=1;
+			if(teamscompleted == wotteams[0].playerlinks.length) {
+				parsedteams[0] = wotteams[0];
+				if(DEBUG) console.log("finished team "+0+" "+wotteams[0].name);
+				updateStandaloneTeamStatsTable();
+			}
+			data=null;
+		}
+	);
+}
+
+function updateStandaloneTeamStatsTable()
+{
+	$('#statLoadingIndicator').remove();
+	for (var i = 0; i<wotteams[0].players.length; i++)
+	{
+		$(wotteams[0].playerlinks[i]).after("&nbsp;&nbsp;<span style='color:"+colorForRating(wotteams[0].players[i].rating)+";'>"+wotteams[0].players[i].rating+"</span>")
+	}
+	avg = (wotteams[0].sum / wotteams[0].players.length);
+	$('.t-table__team-staff > tbody > tr > th').append("&nbsp;&nbsp;AVG:&nbsp;<span style='color:"+colorForRating(avg)+";'>"+avg+"</span>")
+}
+
 function parsePlayers()
 {
 	if(DEBUG) console.log("parsePlayers start");
@@ -83,14 +131,15 @@ function getPlayer(index,teamindex,link)
 	}
 	$.get(link.href,null, function (data, status, xhr ) {
 			var rating = $(data).find('p.t-personal-data_value__pr')[0].innerText;
+			rating=rating.replace(',','');
 			var p = {"rating":rating,"name":link.innerText};
 			if(rating > wotteams[teamindex].best) wotteams[teamindex].best = rating;
 			wotteams[teamindex].players[index] = p;
-			wotteams[teamindex].sum += parseFloat(rating);
+			wotteams[teamindex].sum += parseInt(rating);
 			if(wotteams[teamindex].players.length == wotteams[teamindex].playerlinks.length) {
 				parsedteams[teamindex] = wotteams[teamindex];
 				if(DEBUG) console.log("finished team "+teamindex+" "+wotteams[teamindex].name);
-				updateStatsTable();
+				updateTeamStatsTable();
 			}
 			data=null;
 			if(parsedteams.length == wotteams.length) {
@@ -105,7 +154,7 @@ function doneParsing()
 	if(DEBUG) console.log("doneParsing")
 }
 
-function updateStatsTable() {
+function updateTeamStatsTable() {
 	$("#WoTGroupStatsContainer").remove();
 	var container = '<div id="WoTGroupStatsContainer" style="margin: 15px;"><h4 class="b-head-team">Team Stats</h4>';
 	var table = '<table id="WoTGroupStatsList" class="t-table t-tournament">';
@@ -128,6 +177,7 @@ function updateStatsTable() {
 
 function colorForRating(rating)
 {
+	rating=parseInt(rating);
 	if(rating > 8000) {
 		return '#C718C7';
 	} else if (rating > 7000) {
